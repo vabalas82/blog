@@ -3,6 +3,19 @@ require_once dirname(__FILE__).'/../../classes/PsmultiblogPost.php';
 
 class AdminPsmultiblogPostsController extends ModuleAdminController
 {
+    /**
+     * Compatibility wrapper for translation
+     *
+     * PrestaShop 9 removed the l() helper from controllers. This module
+     * still uses the helper so we proxy calls to the module's translator.
+     *
+     * @param string $string
+     * @return string
+     */
+    protected function l(string $string): string
+    {
+        return isset($this->module) ? $this->module->l($string, __CLASS__) : $string;
+    }
     public function __construct()
     {
         $this->bootstrap = true;
