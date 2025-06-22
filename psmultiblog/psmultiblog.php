@@ -25,13 +25,16 @@ class Psmultiblog extends Module
     {
         return parent::install()
             && $this->installDB()
+            && $this->installTab()
             && $this->registerHook('displayHome')
             && $this->registerHook('moduleRoutes');
     }
 
     public function uninstall()
     {
-        return parent::uninstall() && $this->uninstallDB();
+        return parent::uninstall()
+            && $this->uninstallDB()
+            && $this->uninstallTab();
     }
 
     private function installDB()
@@ -45,6 +48,21 @@ class Psmultiblog extends Module
         return true;
     }
 
+    private function installTab()
+    {
+        if (Tab::getIdFromClassName('AdminPsmultiblogPosts')) {
+            return true;
+        }
+        $tab = new Tab();
+        $tab->class_name = 'AdminPsmultiblogPosts';
+        $tab->module = $this->name;
+        $tab->id_parent = (int)Tab::getIdFromClassName('IMPROVE');
+        foreach (Language::getLanguages(false) as $lang) {
+            $tab->name[$lang['id_lang']] = $this->l('Blog Posts');
+        }
+        return $tab->add();
+    }
+
     private function uninstallDB()
     {
         include dirname(__FILE__).'/uninstall.sql';
@@ -52,6 +70,16 @@ class Psmultiblog extends Module
             if (!Db::getInstance()->execute($s)) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    private function uninstallTab()
+    {
+        $id_tab = (int)Tab::getIdFromClassName('AdminPsmultiblogPosts');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            return $tab->delete();
         }
         return true;
     }
