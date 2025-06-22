@@ -3,6 +3,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once __DIR__.'/classes/PsmultiblogPost.php';
+
 class Psmultiblog extends Module
 {
     public function __construct()
